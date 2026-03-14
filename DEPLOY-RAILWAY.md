@@ -34,9 +34,9 @@ git push -u origin main
 
 ---
 
-## 3. Указать папку сервера (Root Directory)
+## 3. Указать папку сервера (Root Directory) — обязательно
 
-По умолчанию Railway будет пытаться запустить корень проекта (Expo). Нужно запускать только сервер:
+По умолчанию Railway собирает **корень** репозитория (Expo). Тогда при сборке вызывается `npm ci` из корня и возникают ошибки зависимостей (ERESOLVE, @nozbe/with-observables). Нужно запускать **только сервер**:
 
 1. Открой созданный **Service** (сервис).
 2. Перейди в **Settings**.
@@ -44,7 +44,15 @@ git push -u origin main
 4. Укажи: **`server`** (без слэша).
 5. Сохрани.
 
-Так Railway будет считать корнем папку `server/`, использовать `server/package.json` и команду `npm start`.
+Так Railway будет считать корнем папку `server/`, использовать `server/package.json` и команды ниже. После смены Root Directory перезапусти деплой (Redeploy).
+
+**Если уже видишь ошибку `ERESOLVE` / `@nozbe/with-observables`** — значит сборка идёт из корня. Поставь Root Directory = **`server`** и сделай Redeploy. В корне проекта добавлен `.npmrc` с `legacy-peer-deps=true` — это помогает только при локальной установке; на Railway должна собираться именно папка `server`.
+
+**Build Command** (в Settings → Build, по желанию):  
+`npm run build` или оставь пустым — Railway сам выполнит `npm install`.
+
+**Start Command** (в Settings → Deploy):  
+`npm start` или оставь пустым — по умолчанию запускается `npm start` из `package.json` (= `node index.js`).
 
 ---
 
