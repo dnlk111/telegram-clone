@@ -1,11 +1,10 @@
 import { Tabs } from "expo-router";
 import { View, Text } from "react-native";
-import { useColorScheme } from "react-native";
-import { TelegramColors } from "../../themes/colors";
+import { useTheme } from "../../themes";
+import { useT } from "../../utils/i18n";
 
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const isDark = useColorScheme() === "dark";
-  const colors = isDark ? TelegramColors.dark : TelegramColors.light;
+  const { colors } = useTheme();
   return (
     <View className="items-center justify-center">
       <Text
@@ -19,8 +18,8 @@ function TabIcon({ name, focused }: { name: string; focused: boolean }) {
 }
 
 export default function TabsLayout() {
-  const isDark = useColorScheme() === "dark";
-  const colors = isDark ? TelegramColors.dark : TelegramColors.light;
+  const { colors } = useTheme();
+  const t = useT();
 
   return (
     <Tabs
@@ -37,22 +36,22 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="chats"
         options={{
-          title: "Chats",
-          tabBarIcon: ({ focused }) => <TabIcon name="Chats" focused={focused} />,
+          title: t("chats"),
+          tabBarIcon: ({ focused }) => <TabIcon name={t("chats")} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="calls"
         options={{
-          title: "Calls",
-          tabBarIcon: ({ focused }) => <TabIcon name="Calls" focused={focused} />,
+          title: t("calls"),
+          tabBarIcon: ({ focused }) => <TabIcon name={t("calls")} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
-          tabBarIcon: ({ focused }) => <TabIcon name="Settings" focused={focused} />,
+          title: t("settings"),
+          tabBarIcon: ({ focused }) => <TabIcon name={t("settings")} focused={focused} />,
         }}
       />
     </Tabs>
