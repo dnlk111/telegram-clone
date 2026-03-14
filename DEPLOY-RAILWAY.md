@@ -1,6 +1,45 @@
 # Деплой на Railway
 
-На Railway разворачивается **сервер** (Express + Socket.io). Мобильное приложение (Expo) остаётся на телефоне и подключается к этому серверу по URL.
+Можно развернуть:
+- **Только API** (сервер в папке `server/`) — для мобильного приложения в Expo Go.
+- **Сайт-мессенджер** (веб-версия + API на одном домене) — чтобы открывать мессенджер в браузере по ссылке Railway.
+
+---
+
+## Вариант A: Мессенджер как сайт на одном домене
+
+Сборка веб-версии Expo и раздача её тем же сервером. По адресу `https://твой-домен.up.railway.app` откроется сайт-мессенджер.
+
+### Настройки в Railway
+
+1. **Root Directory** — оставь **пустым** (удали `server`, чтобы сборка шла из корня репо).
+2. **Build Command:**
+   ```bash
+   sh build-railway.sh
+   ```
+3. **Start Command:**
+   ```bash
+   cd server && node index.js
+   ```
+4. **Generate Domain** в Networking — скопируй URL (например `https://100gram.up.railway.app`).
+5. В **Variables** добавь переменную (чтобы веб-клиент подключался к твоему серверу):
+   - **Name:** `EXPO_PUBLIC_SOCKET_URL`
+   - **Value:** `https://твой-домен.up.railway.app` (без слэша в конце).
+
+После деплоя по корневому URL будет открываться веб-приложение; API: `https://твой-домен.up.railway.app/api` и `/api/health`. Если домен создал после первого деплоя — добавь переменную и сделай **Redeploy**.
+
+---
+
+## Вариант B: Только API (без сайта)
+
+Для мобильного приложения в Expo Go — только бэкенд.
+
+### Настройки в Railway
+
+1. **Root Directory:** **`server`** (без слэша).
+2. **Build Command** — пусто.
+3. **Start Command** — пусто (по умолчанию `npm start`).
+4. **Generate Domain** — скопировать URL и прописать в приложении в `.env` как `EXPO_PUBLIC_SOCKET_URL`.
 
 ---
 
@@ -34,25 +73,10 @@ git push -u origin main
 
 ---
 
-## 3. Указать папку сервера (Root Directory) — обязательно
+## 3. Root Directory и команды (зависит от варианта)
 
-По умолчанию Railway собирает **корень** репозитория (Expo). Тогда при сборке вызывается `npm ci` из корня и возникают ошибки зависимостей (ERESOLVE, @nozbe/with-observables). Нужно запускать **только сервер**:
-
-1. Открой созданный **Service** (сервис).
-2. Перейди в **Settings**.
-3. В блоке **Build** найди **Root Directory** (или **Source**).
-4. Укажи: **`server`** (без слэша).
-5. Сохрани.
-
-Так Railway будет считать корнем папку `server/`, использовать `server/package.json` и команды ниже. После смены Root Directory перезапусти деплой (Redeploy).
-
-**Если уже видишь ошибку `ERESOLVE` / `@nozbe/with-observables`** — значит сборка идёт из корня. Поставь Root Directory = **`server`** и сделай Redeploy. В корне проекта добавлен `.npmrc` с `legacy-peer-deps=true` — это помогает только при локальной установке; на Railway должна собираться именно папка `server`.
-
-**Build Command** (в Settings → Build, по желанию):  
-`npm run build` или оставь пустым — Railway сам выполнит `npm install`.
-
-**Start Command** (в Settings → Deploy):  
-`npm start` или оставь пустым — по умолчанию запускается `npm start` из `package.json` (= `node index.js`).
+- **Вариант A (сайт):** Root Directory — **пусто**. Build: `sh build-railway.sh`, Start: `cd server && node index.js`.
+- **Вариант B (только API):** Root Directory = **`server`**. Build и Start — пусто.
 
 ---
 
