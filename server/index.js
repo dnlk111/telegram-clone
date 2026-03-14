@@ -14,7 +14,8 @@ const io = new Server(server, {
   transports: ["websocket", "polling"],
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = "0.0.0.0";
 
 app.get("/", (req, res) => {
   res.json({ ok: true, service: "telegram-clone-server", timestamp: new Date().toISOString() });
@@ -31,6 +32,17 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+}).on("error", (err) => {
+  console.error("Server listen error:", err);
+  process.exit(1);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception:", err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason, p) => {
+  console.error("Unhandled rejection at:", p, "reason:", reason);
 });
